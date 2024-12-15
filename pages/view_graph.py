@@ -499,7 +499,7 @@ def _cb_redrawGraph(graph_settings, toasts):
 		relevant_hosts.append(hid)
 
 		# add scans that weren't stored already to the relevant sids
-		for h_sid in h_sids.split(','):
+		for h_sid in set(h_sids.split(',')):
 			if h_sid not in relevant_sids:
 				relevant_sids.append(int(h_sid))
 
