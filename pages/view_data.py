@@ -1101,7 +1101,8 @@ def _cb_updateResultsTable(datatable_settings, _, toasts):
 		# in the datatable we don't use the os_family or the label
 		# but the graph uses the same query and needs the family (this is more readable than managing two giant queries)
 		hid, os_name, _, _, ipv4, ipv6, mac, names, ports, tools, results_portcount, tag, _, _ = host_result
-		tools = tools.replace(',', ', ') # SQLite does not allow DISTINCT and custom SEPERATOR, so we change it manually
+		# tools can be listed redundantly, so use a set to get unique values (DISTINCT would fail on edge cases due to multiple GROUP BY)
+		tools = ', '.join(set(tools.split(',')))
 		names = names.replace(',', ', ') if names else ''
 		result_rows.append(dict(
 			os=os_name,
