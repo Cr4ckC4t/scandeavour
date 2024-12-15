@@ -314,10 +314,10 @@ SELECT
 	y.mac,
 	y.hns,
 	group_concat(y.port||'/'||y.protocol, ", ") AS port,
-	y.tools,
+	group_concat(y.tools) AS tools,
 	COUNT(y.port) AS portcount,
 	y.tag,
-	group_concat(DISTINCT y.sids) AS sids,
+	group_concat(y.sids) AS sids,
 	group_concat(DISTINCT y.pid) AS pids
 FROM (
 	SELECT
@@ -332,8 +332,8 @@ FROM (
 		x.hns,
 		x.port,
 		x.protocol,
-		group_concat(DISTINCT x.tool) AS tools,
-		group_concat(DISTINCT x.sid) AS sids,
+		group_concat(x.tool) AS tools,
+		group_concat(x.sid) AS sids,
 		x.pid
 	FROM ( SELECT
 			h.hid,
