@@ -1,0 +1,47 @@
+.upload-container {
+	width: 100%;
+	padding: 1rem;
+	height: fit-content;
+	display: flex;
+	flex-direction: column;
+}
+
+.upload-scan:hover {
+	background-color: var(--bs-secondary);
+	cursor: pointer;
+}
+
+.upload-content {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	gap: 0.5rem;
+}
+
+.upload-content span {
+	color: var(--bs-success)
+}
+
+.upload-container h4 {
+	color: #fff;
+}
+
+.medium-heading {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: left;
+	column-gap: 0.5rem;
+}
+
+.label-progress-bar {
+	font-size: medium;
+	height:1.4rem;
+}
+
+.scan-del-btn {
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+}

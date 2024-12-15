@@ -1,0 +1,89 @@
+/* This creates a skinny side bar fixed to the left of the page */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 6rem;
+  padding: 2rem 1rem;
+  background-color: #2f323a;
+  z-index: 1050;
+  transition: width 0.2s ease-in-out;
+}
+
+/* when the user hovers on the sidebar, expand it */
+.sidebar:hover {
+  width: 14rem;
+}
+
+/* size logo img (sidebar is 6 rem)
+ * <1 sidebar padding><4 logo width><1>
+ */
+.nav-logo {
+	width: 4rem;
+}
+
+/* make sure the contents of the navlink don't wrap when navbar collapses */
+.sidebar .nav-link {
+	width: 100%;
+	overflow: hidden;
+	white-space: nowrap;
+	padding: 1rem;
+}
+
+.nav-link:hover {
+  background-color: #26272e;
+}
+
+.nav-pills .nav-link.active {
+	background-color: #26272e;
+}
+
+/* sidebar is 6 rem
+ * <1 sidebar padding><1 nav-link padding><2 logo width><1><1>
+ */
+.sidebar .nav-link img {
+	width: 2rem;
+}
+
+/* hide the navlink labels by default */
+.sidebar .nav-link span {
+	visibility: hidden;
+	opacity: 1;
+	transition: opacity 0.2s ease-in-out;
+	margin-left: 1rem;
+}
+
+.sidebar > img {
+	transition: transform 0.5s ease-in;
+}
+
+.sidebar:hover > img {
+	transform: rotateZ(90deg);
+}
+
+/* when the sidebar is hovered, reveal the labels */
+.sidebar:hover .nav-link span {
+	visibility: visible;
+	opacity: 1;
+}
+
+
+/* make sure content fills the page and starts after the sidebar */
+.content {
+	width: 100vw;
+	padding-left: 6rem; /* width of collapsed sidebar */
+}
+
+
+.toaster {
+	position: fixed;
+	top: 2rem;
+	right: 2rem;
+	width: auto;
+	z-index: 9000; /* render toasts on top, always */
+}
+
+.toaster .toast {
+	margin-top: 1em;
+}

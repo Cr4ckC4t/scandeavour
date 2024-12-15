@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="68" height="68" fill="none" stroke="#8EBA17" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-terminal" viewBox="0 -8 32 32">
+  <polyline points="4 17 10 11 4 5"></polyline>
+  <line x1="12" y1="19" x2="20" y2="19"></line>
+  <path d="M 27.78 3.78 C 26.693 4.609 25.368 5.069 24 5.091 C 19.546 5.091 17 0 17 0 C 17.792 -1.475 18.89 -2.764 20.22 -3.78 M 22.664 -4.938 C 23.102 -5.041 23.551 -5.091 24 -5.091 C 28.454 -5.091 31 0 31 0 C 30.614 0.723 30.154 1.403 29.626 2.03 M 25.349 1.349 C 24.348 2.424 22.557 2.012 22.127 0.607 C 21.913 -0.092 22.117 -0.851 22.651 -1.349" style="stroke-width: 1px; stroke: rgb(255, 255, 255);"></path>
+  <line x1="17" y1="-7" x2="31" y2="7" style="stroke-width: 1px; stroke: rgb(255, 255, 255);"></line>
+</svg>

@@ -1,0 +1,122 @@
+BEGIN;
+
+/*
+ * IMPORTANT: When adding or removing a table here, remember to delete it on cleanup in import_scan.py
+ * IMPORTANT: When changing the schema here, update the DataFilterMap class to reflect the correct names (currently found in utils.py)
+ */
+
+
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS _setup_(
+	init INTEGER NOT NULL
+);
+
+INSERT INTO _setup_ (init) VALUES (1);
+
+CREATE TABLE IF NOT EXISTS input_files(
+	fid INTEGER PRIMARY KEY,
+	type TEXT NOT NULL COLLATE NOCASE,
+	filename TEXT NOT NULL COLLATE NOCASE,
+	ingestDate REAL NOT NULL,
+	filesize INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS scans(
+	sid INTEGER PRIMARY KEY,
+	file INTEGER NOT NULL,
+	tool TEXT NOT NULL COLLATE NOCASE,
+	args TEXT NOT NULL COLLATE NOCASE,
+	version TEXT NOT NULL COLLATE NOCASE,
+	start REAL NOT NULL,
+	stop REAL NOT NULL,
+	hostsScanned INTEGER NOT NULL,
+	hostsUp INTEGER NOT NULL,
+	FOREIGN KEY(file) REFERENCES input_files(fid)
+);
+
+/* IPv4 is stored as int for easy filtering.
+ * Hostnames can be multiple so we store them separately.
+ */
+CREATE TABLE IF NOT EXISTS hosts(
+	hid INTEGER PRIMARY KEY,
+	ipv4 INTEGER UNIQUE,
+	ipv6 TEXT UNIQUE COLLATE NOCASE,
+	mac TEXT UNIQUE COLLATE NOCASE,
+	reason TEXT NOT NULL COLLATE NOCASE,
+	os_name TEXT NOT NULL COLLATE NOCASE,
+	os_accuracy INTEGER NOT NULL,
+	os_family TEXT NOT NULL COLLATE NOCASE,
+	os_vendor TEXT NOT NULL COLLATE NOCASE,
+	label TEXT NOT NULL, /* no collate nocase because we don't use it for matching */
+	port_cnt INTEGER DEFAULT 0,
+	script_cnt INTEGER DEFAULT 0,
+	tag TEXT NOT NULL DEFAULT '' COLLATE NOCASE
+);
+
+CREATE TABLE IF NOT EXISTS hostnames(
+	nid INTEGER PRIMARY KEY,
+	host INTEGER NOT NULL,
+	name TEXT NOT NULL COLLATE NOCASE,
+	UNIQUE (host,name),
+	FOREIGN KEY(host) REFERENCES hosts(hid)
+);
+
+
+/* I don't expect to delete scans, hosts or ports, hence no ON ACTION or TRIGGER.
+ * Deleting a scan, host or port after importing more than one scan just doesn't
+ * seem useful or right.
+ */
+CREATE TABLE IF NOT EXISTS scans_hosts(
+	scan INTEGER NOT NULL,
+	host INTEGER NOT NULL,
+	FOREIGN KEY(scan) REFERENCES scans(sid),
+	FOREIGN KEY(host) REFERENCES hosts(hid),
+	PRIMARY KEY(scan, host)
+) WITHOUT ROWID;
+
+CREATE TABLE IF NOT EXISTS ports(
+	pid INTEGER PRIMARY KEY,
+	host INTEGER NOT NULL,
+	port INTEGER NOT NULL,
+	protocol TEXT NOT NULL COLLATE NOCASE,
+	svc_name TEXT NOT NULL COLLATE NOCASE,
+	svc_info TEXT NOT NULL COLLATE NOCASE,
+	svc_ssl TEXT NOT NULL COLLATE NOCASE,
+	UNIQUE (host, port, protocol),
+	FOREIGN KEY(host) REFERENCES hosts(hid)
+);
+
+/* Incrementing the port count for the host */
+CREATE TRIGGER IF NOT EXISTS Port_Count_Increment AFTER INSERT ON ports
+BEGIN
+	UPDATE hosts SET port_cnt = port_cnt+1 WHERE hid=NEW.host;
+END;
+
+CREATE TABLE IF NOT EXISTS scans_ports(
+	scan INTEGER NOT NULL,
+	port INTEGER NOT NULL,
+	FOREIGN KEY(scan) REFERENCES scans(sid),
+	FOREIGN KEY(port) REFERENCES ports(pid),
+	PRIMARY KEY(scan, port)
+) WITHOUT ROWID;
+
+CREATE TABLE IF NOT EXISTS pscripts(
+	psid INTEGER PRIMARY KEY,
+	scan INTEGER NOT NULL,
+	host INTEGER NOT NULL,
+	port INTEGER NOT NULL,
+	name TEXT NOT NULL COLLATE NOCASE,
+	output TEXT NOT NULL COLLATE NOCASE,
+	FOREIGN KEY(scan) REFERENCES scans(sid),
+	FOREIGN KEY(host) REFERENCES hosts(hid),
+	FOREIGN KEY(port) REFERENCES ports(pid)
+);
+
+/* Incrementing the port count for the host */
+CREATE TRIGGER IF NOT EXISTS Script_Count_Increment AFTER INSERT ON pscripts
+BEGIN
+	UPDATE hosts SET script_cnt = script_cnt+1 WHERE hid=NEW.host;
+END;
+
+COMMIT;

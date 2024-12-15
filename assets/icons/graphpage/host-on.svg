@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 -8 32 32" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-monitor" xmlns:bx="https://boxy-svg.com">
+  <defs>
+    <bx:export>
+      <bx:file format="svg" href="#object-0" excluded="true"></bx:file>
+      <bx:file format="svg" href="#object-1" path="Untitled 2.svg"></bx:file>
+      <bx:file format="svg" href="#object-2" path="Untitled 3.svg"></bx:file>
+      <bx:file format="svg" path="Untitled 4.svg"></bx:file>
+    </bx:export>
+  </defs>
+  <rect x="2" y="3" width="20" height="14" rx="2" ry="2" style="stroke: #008686;" id="object-0"></rect>
+  <line x1="8" y1="21" x2="16" y2="21" style="stroke: #008686;" id="object-1"></line>
+  <line x1="12" y1="17" x2="12" y2="21" style="stroke: #008686;" id="object-2"></line>
+  <path d="M 17 -0.009 C 17 -0.009 19.545 -5.1 24 -5.1 C 28.455 -5.1 31 -0.009 31 -0.009 C 31 -0.009 28.455 5.082 24 5.082 C 19.545 5.082 17 -0.009 17 -0.009 Z" style="stroke: rgb(255, 255, 255); stroke-width: 1px;"></path>
+  <circle cx="24" cy="-0.009" r="1.909" style="stroke: rgb(255, 255, 255); stroke-width: 1px;"></circle>
+</svg>
