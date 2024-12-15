@@ -4,6 +4,8 @@ Dashboard for merging, visualising and filtering network scans.
 
 ## Setup
 
+Requires Python 3.12.
+
 ```
 git clone https://github.com/Cr4ckC4t/scandeavour.git
 cd scandeavour
