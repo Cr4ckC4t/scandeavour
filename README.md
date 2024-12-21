@@ -18,6 +18,20 @@ python3 -m venv ./venv
 .\venv\Scripts\python3 app.py my_project.db
 ```
 
+## Dashboard
+
+
+
+![View a graph with all scans, hosts and open ports.](example_graph.png)
+
+
+
+![View all hosts from merged scan results.](example_data.png)
+
+
+
+![View scan details for single hosts.](example_details.png)
+
 # License and attribution
 
 Code released under the [MIT License](LICENSE).
