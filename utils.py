@@ -247,10 +247,10 @@ class DataFilterMap:
 			'does not contain': { 'query': 'hn.name NOT LIKE "%" || ? || "%"', 'get_input_value':_get_str, 'pattern':'.*', 'placeholder':_str_placeholder},
 		},
 		'host.tag': {
-			'is': { 'query': 'h.tag=?', 'get_input_value':_get_str_or_empty, 'pattern':'[a-zA-Z ]+', 'placeholder':_str_or_empty_placeholder},
-			'is not': { 'query': 'h.tag!=?', 'get_input_value':_get_str_or_empty, 'pattern':'[a-zA-Z ]+', 'placeholder':_str_or_empty_placeholder},
-			'contains': { 'query': 'h.tag LIKE "%" || ? || "%"', 'get_input_value':_get_str, 'pattern':'[a-zA-Z ]+', 'placeholder':_str_placeholder},
-			'does not contain': { 'query': 'h.tag NOT LIKE "%" || ? || "%"', 'get_input_value':_get_str, 'pattern':'[a-zA-Z ]+', 'placeholder':_str_placeholder},
+			'is': { 'query': 'h.tag=?', 'get_input_value':_get_str_or_empty, 'pattern':'.*', 'placeholder':_str_or_empty_placeholder},
+			'is not': { 'query': 'h.tag!=?', 'get_input_value':_get_str_or_empty, 'pattern':'.*', 'placeholder':_str_or_empty_placeholder},
+			'contains': { 'query': 'h.tag LIKE "%" || ? || "%"', 'get_input_value':_get_str, 'pattern':'.*', 'placeholder':_str_placeholder},
+			'does not contain': { 'query': 'h.tag NOT LIKE "%" || ? || "%"', 'get_input_value':_get_str, 'pattern':'.*', 'placeholder':_str_placeholder},
 		},
 		'host.portcount': {
 			'is': { 'query': 'h.port_cnt=?', 'get_input_value':_get_int, 'pattern':'[0-9]*', 'placeholder':_int_placeholder},
