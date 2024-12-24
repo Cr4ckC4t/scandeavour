@@ -18,17 +18,25 @@ python3 -m venv ./venv
 .\venv\Scripts\python3 app.py my_project.db
 ```
 
+## Features
+
+- Load Nmap, Nessus and Masscan results (parsers are modular and can be added as plugins)
+- View scans, hosts and open ports in an interactive graph with details for every node
+- View all merged hosts in a dashboard
+- Expand on host details (i.e. related scans, open ports, script outputs)
+- Apply tags to hosts for custom prioritisation
+- Chain modular drop-down filters to select relevant hosts based on their address, tag, open ports, script outputs, scans, OS, etc.
+- Copy identified hosts and open ports to clipboard for a new scan
+- Export hosts, ports and services to a CSV (e.g. for import in Word)
+- Offline mode - once installed, no internet connection is required (a browser is required to access the dashboard though)
+
 ## Dashboard
 
-
+Using the Zenmap [`nmap_example.xml`](https://github.com/nmap/nmap/blob/master/zenmap/radialnet/share/sample/nmap_example.xml) for demonstration.
 
 ![View a graph with all scans, hosts and open ports.](example_graph.png)
 
-
-
 ![View all hosts from merged scan results.](example_data.png)
-
-
 
 ![View scan details for single hosts.](example_details.png)
 
