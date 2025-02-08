@@ -60,6 +60,9 @@
 .node-li-value {
 	font-family: monospace;
 	word-wrap: break-word;
+	display: block;
+	max-height: 6rem;
+	overflow-x: scroll;
 }
 
 .span-link {
