@@ -989,8 +989,21 @@ def _cb_outputSelectedRows(selected_rows, host_detail_settings):
 							),
 						],
 						title=[
-							html.Span(port['port'], className='hd-port-row-id'),
-							html.Span(port['svc_name'] if len(port['svc_name']) else '', className='hd-port-svc-label')
+							html.Span(port['port'],	className='hd-port-row-id'),
+							html.Span(
+								[
+									port['svc_name'] if len(port['svc_name']) else '',
+									dbc.Badge(
+										str(len(port['scripts'])),
+										color='transparent',
+										pill=True,
+										text_color='white',
+										className='hd-port-scriptcount-badge',
+									) if len(port['scripts']) > 0 else None,
+
+								],
+								className='hd-port-svc-label'
+							)
 						],
 					) for port in ports
 				],

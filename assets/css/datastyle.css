@@ -327,6 +327,11 @@
 	color: #777;
 }
 
+.hd-port-scriptcount-badge {
+	transform: translateY(-50%);
+	border: 1px solid #f0714a;
+}
+
 .hd-p-detail-container {
 	width: 100%;
 	display: flex;
@@ -374,7 +379,7 @@
 
 .hd-sl-row {
 	width: 100%;
-	border-left: 0.4rem solid #808080;
+	border-left: 0.2rem solid #808080;
 	padding-left: 1rem;
 }
 
@@ -391,7 +396,7 @@
 }
 
 .code-box > code {
-	color: #149d00 !important;
+	color: #fff !important;
 	word-wrap: anywhere;
 }
 
@@ -410,7 +415,7 @@
 }
 
 .hd-script-row {
-	border-left: 0.4rem solid #808080;
+	border-left: 0.2rem solid #f0714a;
 	padding-left: 1rem;
 	margin-left: 2rem;
 	margin-right: 1rem;
