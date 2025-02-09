@@ -16,7 +16,7 @@ class fc:
 	blue = '\u001b[34m'
 	end = '\u001b[0m'
 
-class MasscanIngestor(BaseIngestor):
+class MasscanXMLIngestor(BaseIngestor):
 	def __init__(self):
 		super().__init__(
 			name = 'MasscanXML',
