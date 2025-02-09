@@ -1,0 +1,53 @@
+# pyproject.toml
+
+[build-system]
+requires      = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scandeavour"
+version = "1.0.0"
+description = "Dashboard for merging, visualising and filtering network scans"
+readme = "README.md"
+authors = [{ name = "cr4ckc4t", email = "cr4ckc4t@github.com" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+keywords = ["nmap", "nessus", "dashboard"]
+dependencies = [
+    'dash >= 2.18.1',
+    'dash[diskcache]',
+    'dash-bootstrap-components >= 1.6.0',
+    'dash_ag_grid >= 31.2.0',
+    'dash_cytoscape >= 1.0.2',
+]
+requires-python = ">=3.12"
+
+[project.urls]
+Homepage = "https://github.com/Cr4ckC4t/scandeavour"
+
+[project.scripts]
+scandeavour = "app:main"
+
+[tool.bumpver]
+current_version = "1.0.0"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message = "Bump version {old_version} -> {new_version}"
+tag_message = "{new_version}"
+tag_scope = "default"
+commit = true
+tag = true
+push = false
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = [
+    '^version = "{version}"',
+    '^current_version = "{version}"',
+]
+"src/app.py" = [
+    '__version__ = "{version}"',
+]
+

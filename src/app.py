@@ -1,4 +1,4 @@
-__version__ = '0.9'
+__version__ = "0.0.0"
 
 from dash import Dash, html, get_asset_url, page_container, DiskcacheManager, clientside_callback, Input, Output, State
 import dash_bootstrap_components as dbc
@@ -108,8 +108,7 @@ def DashApp(server):
 
 	return app
 
-if __name__ == "__main__":
-
+def main():
 	parser = argparse.ArgumentParser(
 		description='Version: ' + __version__,
 	)
@@ -375,3 +374,5 @@ if __name__ == "__main__":
 		dev_tools_silence_routes_logging=(not args.debug)
 	)
 
+if __name__ == "__main__":
+	main()
