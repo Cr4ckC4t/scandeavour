@@ -112,7 +112,7 @@ def main():
 	parser = argparse.ArgumentParser(
 		description='Version: ' + __version__,
 	)
-	parser.add_argument('projectfile', action='store', help='SQLite database project file')
+	parser.add_argument('projectfile', action='store', help='SQLite database project file (will be created if it doesn\'t exist yet)')
 	parser.add_argument('-p', '--port', required=False, default=8050, action='store', help='port to host the dashboard on')
 	parser.add_argument('-d', '--debug', required=False, action='store_true', help='enable debugging')
 
