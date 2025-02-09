@@ -315,7 +315,6 @@ SELECT
 	y.hns,
 	group_concat(y.port||'/'||y.protocol, ", ") AS port,
 	group_concat(y.tools) AS tools,
-	COUNT(y.port) AS portcount,
 	y.tag,
 	group_concat(y.sids) AS sids,
 	group_concat(DISTINCT y.pid) AS pids

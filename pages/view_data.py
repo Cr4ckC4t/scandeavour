@@ -154,7 +154,6 @@ def layout(**kwargs):
 							{'headerName': 'Hostname', 'field': 'hostname', 'width': 200, 'headerTooltip': 'All hostnames matching the current filter'},
 							{'headerName': 'IPv4', 'field': 'ipv4', 'width': 160, 'headerTooltip': 'IPv4 address of the host'},
 							{'headerName': 'Ports', 'field': 'ports', 'width': 350, 'headerTooltip': 'All ports matching the current filter (view host details for all ports)'},
-							{'headerName': 'Portcount', 'field': 'portcount', 'width': 100, 'headerTooltip': 'Count of ports matching the current filter (may differ from actual portcount for a host)'},
 							{'headerName': 'Scans', 'field': 'scans', 'headerTooltip': 'List of tools matching the current filter'},
 							{'headerName': 'OS', 'field': 'os', 'width': 300, 'headerTooltip': 'Operating system information'},
 							{'headerName': 'Tag', 'field': 'tag', 'width': 200, 'headerTooltip': 'Tag for the host (set it in the host details pane)'},
@@ -1113,7 +1112,7 @@ def _cb_updateResultsTable(datatable_settings, _, toasts):
 	for host_result in qr:
 		# in the datatable we don't use the os_family or the label
 		# but the graph uses the same query and needs the family (this is more readable than managing two giant queries)
-		hid, os_name, _, _, ipv4, ipv6, mac, names, ports, tools, results_portcount, tag, _, _ = host_result
+		hid, os_name, _, _, ipv4, ipv6, mac, names, ports, tools, tag, _, _ = host_result
 		# tools can be listed redundantly, so use a set to get unique values (DISTINCT would fail on edge cases due to multiple GROUP BY)
 		tools = ', '.join(set(tools.split(',')))
 		names = names.replace(',', ', ') if names else ''
@@ -1124,7 +1123,6 @@ def _cb_updateResultsTable(datatable_settings, _, toasts):
                         mac=mac or '',
                         hostname=names or '',
                         ports=ports or '',
-			portcount=results_portcount, # a query like "only tcp" will show the tcp count, not all ports
                         scans=tools,
                         tag=tag,
                         hid=hid

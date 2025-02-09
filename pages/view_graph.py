@@ -494,7 +494,7 @@ def _cb_redrawGraph(graph_settings, toasts):
 
 	for host in qr:
 		# since we use the big query, we don't need every column, only enough to create the node
-		hid, os_name, os_family, hostLabel, _, _, _, _, _, _, _, _, h_sids, h_pids  = host
+		hid, os_name, os_family, hostLabel, _, _, _, _, _, _, _, h_sids, h_pids  = host
 
 		relevant_hosts.append(hid)
 
