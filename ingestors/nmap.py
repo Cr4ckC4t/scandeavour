@@ -122,7 +122,7 @@ class NmapIngestor(BaseIngestor):
 				for xml_port_script in xml_port_scripts:
 					port_scripts.append({
 						'id': xml_port_script.get('id'), # mandatory
-						'output': xml_port_script.get('output'), # mandatory
+						'output': xml_port_script.get('output').strip('\n'), # mandatory
 					})
 				port['scripts'] = port_scripts
 
