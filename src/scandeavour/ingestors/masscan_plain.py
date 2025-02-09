@@ -5,7 +5,7 @@
 # Discovered open port 22/tcp on 127.0.0.1
 # Discovered open port 80/tcp on 127.0.0.1
 
-from ingestor_base import BaseIngestor
+from scandeavour.ingestor_base import BaseIngestor
 import sys
 import os
 import xml.etree.ElementTree as ET

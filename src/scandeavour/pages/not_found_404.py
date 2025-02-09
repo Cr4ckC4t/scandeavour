@@ -1,6 +1,6 @@
 from dash import html, dcc, callback, Input, Output, State, register_page
 import dash_bootstrap_components as dbc
-from components.customToast import CustomToast
+from scandeavour.components.customToast import CustomToast
 
 register_page(__name__)
 

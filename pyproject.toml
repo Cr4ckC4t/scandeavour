@@ -33,7 +33,7 @@ dev = ['bumpver']
 Homepage = "https://github.com/Cr4ckC4t/scandeavour"
 
 [project.scripts]
-scandeavour = "app:main"
+scandeavour = "scandeavour.__main__:main"
 
 [tool.bumpver]
 current_version = "1.1.0"
@@ -50,7 +50,7 @@ push = false
     '^version = "{version}"',
     '^current_version = "{version}"',
 ]
-"src/app.py" = [
+"src/scandeavour/__main__.py" = [
     '__version__ = "{version}"',
 ]
 

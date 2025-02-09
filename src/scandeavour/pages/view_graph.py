@@ -1,8 +1,8 @@
 from dash import html, dcc, callback, Input, Output, State, register_page, get_asset_url, ctx, no_update, ALL, Patch
 import dash_bootstrap_components as dbc
 import dash_cytoscape as cyto
-from components.customToast import CustomToast
-from utils import getDB, NodeHistory, NumToIP, IPtoNum, CIDRtoFirstLast, validateIP, getOS, DataFilterMap
+from scandeavour.components.customToast import CustomToast
+from scandeavour.utils import getDB, NodeHistory, NumToIP, IPtoNum, CIDRtoFirstLast, validateIP, getOS, DataFilterMap
 
 register_page(__name__, path='/graph')
 

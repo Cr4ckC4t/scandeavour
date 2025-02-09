@@ -2,7 +2,7 @@ __version__ = "1.1.0"
 
 from dash import Dash, html, get_asset_url, page_container, DiskcacheManager, clientside_callback, Input, Output, State
 import dash_bootstrap_components as dbc
-from utils import initDB, TagRibbons
+from scandeavour.utils import initDB, TagRibbons
 import diskcache # for background callbacks: https://dash.plotly.com/background-callbacks
 from flask import Flask, request
 import uuid

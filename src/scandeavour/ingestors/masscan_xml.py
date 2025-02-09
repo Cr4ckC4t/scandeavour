@@ -4,7 +4,7 @@
 # The current masscan XML output is flawed (for example "hosts up" shows the port number not host number) and may change in the future.
 # So when things start to break, look at the changes made to out-xml.c in masscan.
 
-from ingestor_base import BaseIngestor
+from scandeavour.ingestor_base import BaseIngestor
 import sys
 import os
 import xml.etree.ElementTree as ET

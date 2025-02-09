@@ -2,8 +2,8 @@ from dash import html, dcc, callback, Input, Output, State, register_page, get_a
 from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
 import dash_ag_grid as dag
-from components.customToast import CustomToast
-from utils import getDB, NumToIP, IPtoNum, CIDRtoFirstLast, DataFilterMap, TagRibbons
+from scandeavour.components.customToast import CustomToast
+from scandeavour.utils import getDB, NumToIP, IPtoNum, CIDRtoFirstLast, DataFilterMap, TagRibbons
 import re
 
 register_page(__name__, path='/data')
