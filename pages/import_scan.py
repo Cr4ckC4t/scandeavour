@@ -129,7 +129,6 @@ def layout(**kwargs):
 		State('upload-scan', 'filename'),
 		State('div-toaster', 'children'),
 		prevent_initial_call=True,
-		background=True,
 	)
 def _cb_fileUpload(file_contents, file_names, toasts):
 	# This gets called on upload but we patched file_contents to be empty, to not crash the browser.
