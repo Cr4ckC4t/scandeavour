@@ -26,6 +26,9 @@ dependencies = [
 ]
 requires-python = ">=3.12"
 
+[project.optional-dependencies]
+dev = ['bumpver']
+
 [project.urls]
 Homepage = "https://github.com/Cr4ckC4t/scandeavour"
 
