@@ -902,7 +902,11 @@ def _cb_outputSelectedRows(selected_rows, host_detail_settings):
 				html.Div([
 					html.Div([
 						html.Span([
-							html.H3(host_label),
+							html.H3(host_label, id='hd-host-label-h3'),
+							dcc.Clipboard(target_id='hd-host-label-h3', style={
+								'margin-left': '1rem',
+								'color': '#9b9b9b'
+							}),
 							html.Span(os_string, className='hd-os-label'),
 						], className='hd-label-header'),
 						html.Div([
