@@ -123,6 +123,22 @@ def layout(**kwargs):
 				html.Div(
 					[
 						html.Img(
+							src=get_asset_url('icons/datapage/export/clipboard.svg')
+						),
+						html.Span('Host:port list')
+					],
+					n_clicks=0,
+					className='export-button',
+					id='btn-export-host-ports-list'
+				),
+				dbc.Tooltip(
+					'Copy a line separated list of all IPv4s and ports matching the current filter to the clipboard. Each line contains one {ipv4}:{port}.',
+					target='btn-export-host-ports-list',
+					placement='top',
+				),
+				html.Div(
+					[
+						html.Img(
 							src=get_asset_url('icons/datapage/export/download.svg')
 						),
 						html.Span('Hosts table (CSV)'),
@@ -265,13 +281,14 @@ def layout(**kwargs):
 		Output('export-download', 'data'),
 		Input('btn-export-target-list', 'n_clicks'),
 		Input('btn-export-port-list', 'n_clicks'),
+		Input('btn-export-host-ports-list', 'n_clicks'),
 		Input('btn-export-hosts-table', 'n_clicks'),
 		State('view-data-table', 'rowData'),
 		State('div-toaster', 'children'),
 		State('export-clipboard', 'n_clicks'),
 		prevent_initial_call=True
 	)
-def _cb_exportBtns(tl_clicks, pl_clicks, ht_clicks, rowData, toasts, clipboard_clicks):
+def _cb_exportBtns(tl_clicks, pl_clicks, hpl_clicks, ht_clicks, rowData, toasts, clipboard_clicks):
 	# Initial callback guard (it fires due to the dynamic page load, regardless of prevent_initial_call)
 	if ([t for t in ctx.args_grouping if t['id'] == ctx.triggered_id][0]['value'] == 0):
 		# We should even be fine without this guard but now I finally got to use Prevent Update and leave it as example
@@ -291,7 +308,7 @@ def _cb_exportBtns(tl_clicks, pl_clicks, ht_clicks, rowData, toasts, clipboard_c
 		if missingCounter > 0:
 			toasts.append(CustomToast(
 				[
-					f'{missingCounter} hosts skipped due to missing IPv4'
+					f'{missingCounter} host{"s" if missingCounter!=1 else ""} skipped due to missing IPv4'
 				],
 				headerText='Some hosts were skipped',
 				level='warning',
@@ -367,6 +384,71 @@ def _cb_exportBtns(tl_clicks, pl_clicks, ht_clicks, rowData, toasts, clipboard_c
 		# At least Nessus and Nmap support comma separated lists for port specification
 		return toasts, ','.join(ports), clipboard_clicks+1, no_update
 
+	elif ctx.triggered_id == 'btn-export-host-ports-list':
+		targets = []
+		protos = set()
+		missingIPv4Counter = 0
+		missingPortsCounter = 0
+		for row in rowData:
+			ipv4 = row['ipv4']
+
+			if ipv4 == '':
+				missingIPv4Counter += 1
+				continue
+
+			ports_string = row['ports']
+			if len(ports_string)==0:
+				missingPortsCounter += 1
+				continue
+
+			for port in ports_string.split(', '):
+				number,proto=port.split('/')
+				targets.append(f'{ipv4}:{number}')
+				protos.add(proto)
+
+		if missingIPv4Counter > 0:
+			toasts.append(CustomToast(
+				[
+					f'{missingIPv4Counter} host{"s" if missingIPv4Counter!=1 else ""} skipped due to missing IPv4 address'
+				],
+				headerText='Some host:port combinations were skipped',
+				level='warning',
+				duration=8000
+			))
+
+		if missingPortsCounter > 0:
+			toasts.append(CustomToast(
+				[
+					f'{missingPortsCounter} host{"s" if missingPortsCounter!=1 else ""} skipped due to 0 matching ports'
+				],
+				headerText='Some host:port combinations were skipped',
+				level='warning',
+				duration=8000
+			))
+
+		if len(protos) > 1:
+			toasts.append(CustomToast(
+				[
+					f'The output contains ports for different protocols ({", ".join(p for p in protos)}). This may result in duplicate lines.'
+				],
+				headerText='Different port protocols',
+				level='warning',
+				duration=8000
+			))
+
+		toasts.append(CustomToast(
+			[
+				f'Copied {len(targets)} host:port combination{"s" if len(targets)!=1 else ""} to clipboard'
+			],
+			headerText='Clipboard',
+			level='success',
+		))
+
+		# Combinations of <host>:<port> can be used by tools like testssl.
+		# We do not distinguish by port protocol though, so the same UDP and TCP number may cause
+		# duplicates in the output. Users should use a protocol filter if they don't want duplicates.
+		return toasts, '\n'.join(targets), clipboard_clicks+1, no_update
+
 	elif ctx.triggered_id == 'btn-export-hosts-table':
 		db_con, db = getDB()
 
@@ -420,11 +502,12 @@ def _cb_exportBtns(tl_clicks, pl_clicks, ht_clicks, rowData, toasts, clipboard_c
 			level='success' if hostCount>0 else 'warning',
 		))
 
+		db_con.close()
+
 		return toasts, no_update, no_update, {
 			'filename': newFilename,
 			'content': '\n'.join(lines)
 		}
-		db_con.close()
 
 	return no_update, no_update, no_update, no_update
 
