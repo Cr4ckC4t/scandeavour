@@ -80,7 +80,9 @@ def DashApp(server):
 				],
 				vertical=True,
 				pills=True
-			)
+			),
+			html.Span(f'v{__version__}', className='nav-version')
+
 		],
 		id='div-sidebar',
 		className="sidebar"
@@ -115,11 +117,17 @@ def main():
 	parser.add_argument('projectfile', action='store', help='SQLite database project file (will be created if it doesn\'t exist yet)')
 	parser.add_argument('-p', '--port', required=False, default=8050, action='store', help='port to host the dashboard on')
 	parser.add_argument('-d', '--debug', required=False, action='store_true', help='enable debugging')
+	parser.add_argument('-v', '--version', required=False, action='store_true', help='print version')
 
 	args = parser.parse_args()
 
+	if args.version == True:
+		print(f'v{__version__}')
+		exit(0)
+
 	environ['SQLITE_PROJECT_FILE'] = args.projectfile
 
+	print(f'[+] Version: {__version__}')
 	initDB()
 	app = DashApp(server)
 

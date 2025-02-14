@@ -1,19 +1,21 @@
 /* This creates a skinny side bar fixed to the left of the page */
 .sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: 6rem;
-  padding: 2rem 1rem;
-  background-color: #2f323a;
-  z-index: 1050;
-  transition: width 0.2s ease-in-out;
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	width: 6rem;
+	padding: 2rem 1rem;
+	background-color: #2f323a;
+	z-index: 1050;
+	transition: width 0.2s ease-in-out;
+	display: flex;
+	flex-direction: column;
 }
 
 /* when the user hovers on the sidebar, expand it */
 .sidebar:hover {
-  width: 14rem;
+	width: 14rem;
 }
 
 /* size logo img (sidebar is 6 rem)
@@ -32,7 +34,7 @@
 }
 
 .nav-link:hover {
-  background-color: #26272e;
+	background-color: #26272e;
 }
 
 .nav-pills .nav-link.active {
@@ -68,6 +70,11 @@
 	opacity: 1;
 }
 
+.nav-version {
+	color: #888;
+	align-self: center;
+	margin-top: auto;
+}
 
 /* make sure content fills the page and starts after the sidebar */
 .content {
