@@ -246,6 +246,10 @@
 	flex-wrap: wrap;
 }
 
+.hd-clipboard {
+	color: #888;
+}
+
 .hd-card {
 	padding: 1rem;
 }
@@ -253,6 +257,15 @@
 .hd-label-card {
 	display: flex;
 	flex-direction: column;
+}
+
+.hd-label-card-entry {
+	display: flex;
+	flex-direction: row;
+}
+
+.hd-label-card-entry span {
+	margin-right: .4rem;
 }
 
 .hd-label-header {

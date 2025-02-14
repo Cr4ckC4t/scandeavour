@@ -902,37 +902,59 @@ def _cb_outputSelectedRows(selected_rows, host_detail_settings):
 				html.Div([
 					html.Div([
 						html.Span([
-							html.H3(host_label, id='hd-host-label-h3'),
-							dcc.Clipboard(target_id='hd-host-label-h3', style={
-								'margin-left': '1rem',
-								'color': '#9b9b9b'
-							}),
+							html.H3(host_label),
 							html.Span(os_string, className='hd-os-label'),
 						], className='hd-label-header'),
 						html.Div([
 							html.Div([
 								html.Div([
 									html.Span('IPv4: ', className='hd-id-label'),
-									html.Span(ipv4),
-								]),
+									html.Span(ipv4, id=f'hd-ipv4-label-{hid}'),
+									dcc.Clipboard(
+										target_id=f'hd-ipv4-label-{hid}',
+										className='hd-clipboard'
+									),
+									],
+									className='hd-label-card-entry'
+								),
 								html.Div([
 									html.Span('Mac: ', className='hd-id-label'),
-									html.Span(mac),
-								]),
+									html.Span(mac, id=f'hd-mac-label'),
+									dcc.Clipboard(
+										target_id=f'hd-mac-label-{hid}',
+										className='hd-clipboard'
+									),
+									],
+									className='hd-label-card-entry'
+								),
 								html.Div([
 									html.Span('Up reason: ', className='hd-id-label'),
 									html.Span(reason),
-								]),
+									],
+									className='hd-label-card-entry'
+								),
 							], className='hd-label-card-col'),
 							html.Div([
 								html.Div([
 									html.Span('IPv6: ', className='hd-id-label'),
-									html.Span(ipv6),
-								]),
+									html.Span(ipv6, id=f'hd-ipv6-label-{hid}'),
+									dcc.Clipboard(
+										target_id=f'hd-ipv6-label-{hid}',
+										className=f'hd-clipboard'
+									),
+									],
+									className='hd-label-card-entry'
+								),
 								html.Div([
 									html.Span('Hostname: ', className='hd-id-label'),
-									html.Span(", ".join(name for name in hostnames)),
-								]),
+									html.Span(", ".join(name for name in hostnames), id=f'hd-hn-label-{hid}'),
+									dcc.Clipboard(
+										target_id=f'hd-hn-label-{hid}',
+										className='hd-clipboard'
+									),
+									],
+									className='hd-label-card-entry'
+								),
 							], className='hd-label-card-col'),
 						], className='hd-label-card-identifiers'),
 					], className='hd-card hd-label-card'),
