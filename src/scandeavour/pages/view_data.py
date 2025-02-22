@@ -183,7 +183,7 @@ def layout(**kwargs):
 							'cellStyle': {'wordBreak':'normal'},
 						},
 						className='ag-theme-alpine-dark',
-						style={'height': '30rem'},
+						style={'height': '24rem'},
 						dashGridOptions={ # filter text is updated in callback and not listed here
 							'rowSelection': 'multiple'
 						},
