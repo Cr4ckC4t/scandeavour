@@ -21,7 +21,7 @@ def layout(**kwargs):
 		html.Div([
 			html.Div([
 				html.Img(src=get_asset_url('icons/headings/filter.svg')),
-				html.H3('Filters')
+				html.H4('Filters')
 			], className='medium-heading'),
 			html.Div([
 				dcc.Dropdown(
@@ -74,8 +74,8 @@ def layout(**kwargs):
 			html.Div([
 				html.Div([
 					html.Img(src=get_asset_url('icons/headings/grid.svg')),
-					html.H3('Hosts'),
-					html.H3('', id='result-counter', className='header-result-counter'),
+					html.H4('Hosts'),
+					html.H4('', id='result-counter', className='header-result-counter'),
 					dbc.Progress(
 						value=100,
 						color='info',
@@ -201,7 +201,7 @@ def layout(**kwargs):
 			html.Div([
 				html.Div([
 					html.Img(src=get_asset_url('icons/headings/pocket.svg')),
-					html.H3('Details')
+					html.H4('Details')
 				], className='medium-heading'),
 				html.Div(className='data-heading-grower'),
 				dbc.Switch(
@@ -786,7 +786,7 @@ def genScanList(scans):
 		[
 			html.Div(
 				[
-					html.H4(f'{scan["tool"]} {scan["version"]}'),
+					html.H5(f'{scan["tool"]} {scan["version"]}'),
 					html.Div([
 						html.Img(src=get_asset_url('icons/host-details/tag.svg'), className='detail-icon', id=f'sd-filename-icon-{scan["sid"]}'),
 						html.Span(scan['filename'], className='code-text'),
