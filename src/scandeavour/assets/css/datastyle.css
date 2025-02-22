@@ -203,13 +203,12 @@
 }
 
 .hd-container {
-	background: radial-gradient(circle at 10% 20%, #2f323a 0%, #4b314b 90%); 
+	background: linear-gradient(to right, #2f323a, #5c5b5c); 
 	border-radius: 1rem;
 	padding: 1rem;
 	display: flex;
 	flex-direction: column;
 	row-gap: 1rem;
-	box-shadow: 0 0 1rem #00f0fe;
 	position: relative; /* required to position the ribbon */
 }
 
