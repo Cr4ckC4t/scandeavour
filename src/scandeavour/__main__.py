@@ -77,6 +77,14 @@ def DashApp(server):
 						href="/data",
 						active="exact"
 					),
+					dbc.NavLink(
+						[
+							html.Img(src=get_asset_url('icons/pie-chart.svg')),
+							html.Span("View Statistics")
+						],
+						href="/stats",
+						active="exact"
+					),
 				],
 				vertical=True,
 				pills=True
