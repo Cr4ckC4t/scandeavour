@@ -323,7 +323,7 @@ def _cb_init_stats_page(_):
 		os_combo.append(f'{r[0] if r[0]!="" else "-"} / {r[1] if r[1]!="" else "-"} / {r[2] if r[2]!="" else "-"}')
 		os_values.append(int(r[3]))
 
-	os_table_data = [{'os_family': os_family[i], 'os_vendor': os_vendor[i], 'os_name': os_name, 'count': os_values[i]} for i in range(len(os_name))]
+	os_table_data = [{'os_fam': os_family[i], 'os_ven': os_vendor[i], 'os_nam': os_name[i], 'count': os_values[i]} for i in range(len(os_name))]
 	# Pie chart for OS
 	os_donut = go.Figure(
 		data = [go.Pie(
