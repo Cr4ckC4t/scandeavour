@@ -1,0 +1,101 @@
+.stats-grid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	grid-gap: 2rem;
+	padding: 2rem;
+}
+
+.stats-box {
+	padding: 1rem;
+	background: linear-gradient(to right, #2f323a, #4b4b4b);
+	border-radius: 1rem;
+}
+
+.grid-span-two {
+	grid-column: span 2;
+}
+
+.graph-stats-wrapper {
+	display: flex;
+	flex-direction: row;
+	padding: 1rem;
+}
+
+:root {
+	--gauge-width: 12rem;
+	--gauge-height: 6rem;
+	--gauge-thickness: 1.4rem;
+	--gauge-bg-color: #626262;
+	--gauge-bar-color: #00ffe0;
+}
+
+.gauge-container {
+	width: var(--gauge-width);
+	height: var(--gauge-height);
+	position: relative;
+	overflow: hidden;
+}
+
+.gauge-background {
+	position: absolute;
+	width: var(--gauge-width);
+	height: var(--gauge-height);
+	border-radius: var(--gauge-height) var(--gauge-height) 0 0;
+	border-left: var(--gauge-thickness) solid var(--gauge-bg-color);
+	border-top: var(--gauge-thickness) solid var(--gauge-bg-color);
+	border-right: var(--gauge-thickness) solid var(--gauge-bg-color);
+}
+
+.gauge-filler {
+	z-index: 2;
+	position: absolute;
+	width: var(--gauge-width);
+	height: var(--gauge-height);
+	top: var(--gauge-height);
+	border-radius: 0 0 var(--gauge-height) var(--gauge-height);
+	border-left: var(--gauge-thickness) solid var(--gauge-bar-color);
+	border-bottom: var(--gauge-thickness) solid var(--gauge-bar-color);
+	border-right: var(--gauge-thickness) solid var(--gauge-bar-color);
+	transform-origin: center top;
+	transition: 1.5s all ease-in-out;
+}
+
+.gauge-data {
+	z-index: 3;
+	position: absolute;
+	width: var(--gauge-width);
+	height: var(--gauge-height);
+	display: flex;
+	align-items: end;
+	justify-content: center;
+}
+
+.gauge-label {
+	display: flex;
+	width: var(--gauge-width);
+	justify-content: center;
+	color: #aaa;
+}
+
+.gauge-data-table {
+	margin-left: 1.5rem;
+	flex-grow: 1;
+}
+
+.lg-key-value {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+.list-group {
+	--bs-list-group-border-color: #777;
+}
+
+.stats-graph-container {
+	width: 30rem;
+}
+
+.stats-ag-grid {
+	padding-left: 2rem;
+}
