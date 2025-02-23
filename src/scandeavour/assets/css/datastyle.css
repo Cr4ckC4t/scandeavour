@@ -203,7 +203,7 @@
 }
 
 .hd-container {
-	background: linear-gradient(to right, #2f323a, #5c5b5c); 
+	background: linear-gradient(to right, #2f323a, #4b4b4b); 
 	border-radius: 1rem;
 	padding: 1rem;
 	display: flex;
