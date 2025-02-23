@@ -52,15 +52,25 @@ This will create a new project database (SQLITE) in the current folder. It will 
 > [!WARNING]  
 > Do not run the dashboard with administrative capabilities and do not expose the GUI externally. While special inputs are treated with caution, malicious scan results were not considered during development. The dashboard does also not authenticate users.
 
-1. Open http://127.0.0.1:8050/ and start uploading your scan results
-   <img src="https://github.com/user-attachments/assets/d940a2ea-323a-4a13-97d2-e257d1ede519" width="800" />
+https://github.com/user-attachments/assets/0bd86c1d-ea4e-46db-a35e-1758ca132f59
 
-2. Switch to the graph tab for an overview
-   <img src="https://github.com/user-attachments/assets/2b392a38-4a29-4d4e-9354-49a9187bb46c" width="800" />
+## Development and contribution
 
-3. Filter data and view hosts details
-   <img src="https://github.com/user-attachments/assets/0011a58c-6c52-43b5-8902-34f7f6f4c633" width="800" />
+You can clone the repository, switch to the `src` directory and create a virtual Python environment. Subsequently you can install the required libraries with `pip`. Check the `pyproject.toml` for the recommended Python and library versions.
 
+```
+cd src
+python3 -m venv ./venv
+source venv/bin/activate
+pip3 install dash dash[diskcache] dash-bootstrap-components dash_ag_grid dash_cytoscape
+```
+
+Lastly, start the application with
+```
+python3 -m scandeavour [-d] # -d activates debug mode with hot reloading
+```
+
+You are welcome to open merge requests if you add features that you would like to see in the next version.
 
 ## 📃 License and attribution
 
