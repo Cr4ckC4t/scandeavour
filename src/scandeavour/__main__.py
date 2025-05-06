@@ -382,7 +382,7 @@ def main():
 	)
 
 	# DO NOT EXPOSE THIS APPLICATION TO ANYTHING OTHER THAN LOCALHOST
-	app.run_server(
+	app.run(
 		host='127.0.0.1',
 		port=args.port,
 		debug=args.debug,
