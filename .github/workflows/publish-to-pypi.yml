@@ -20,7 +20,7 @@ jobs:
     - name: Install dependencies
       run: python3 -m pip install build
     - name: Build Scandeavour
-      run: python3 -m build 
+      run: python3 -m build
     - name: Store the distribution package
       uses: actions/upload-artifact@v4
       with:
