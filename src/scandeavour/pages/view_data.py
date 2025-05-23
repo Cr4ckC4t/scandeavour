@@ -220,6 +220,7 @@ def layout(**kwargs):
 		className='data-details-container'),
 
 		# Modal for tag management
+		# TODO: Allow users to select their own tag
 		dbc.Modal(
 			[
 				dbc.ModalHeader(dbc.ModalTitle('Update tag')),
