@@ -20,7 +20,14 @@ def upload_file_api():
 		print(f'[+] Uploading file...')
 		name = uuid.uuid4().hex
 		with open(path.join(tempfile.gettempdir(),name), 'wb') as f:
-			f.write(request.data)
+			chunk_size = 4096
+			while True:
+				# Use a stream reader, otherwise the app will crash for files with ~400 MB
+				chunk = request.stream.read(chunk_size)
+				print(f'getting chunk {len(chunk)}')
+				if len(chunk) == 0:
+					break
+				f.write(chunk)
 			print(f'[+] File uploaded successfully ({name})')
 		return name, 200
 	except Exception as e:
