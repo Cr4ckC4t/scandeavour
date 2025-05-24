@@ -1,3 +1,4 @@
+# This is just the base class with pseudo code for demonstration in the validate/parse logic
 class BaseIngestor:
 
 	def __init__(self, name, accepted_files):
@@ -10,23 +11,30 @@ class BaseIngestor:
 	def getAcceptedFiles(self):
 		return self.accepted_files
 
-	def validate(self, raw_file):
-		# Run checks to ensure that this ingestor is the right one
-		# for this file
-		if len(raw_file) < 1:
-			# Return False if it is not
-			return False
-
-		# Save the file otherwise
-		self.raw_file = raw_file
-
-		# Return True to signal that this ingestor will parse the file
-		return True
+	def validate(self, file_path):
+		# Run checks to ensure that this ingestor is the right one for this file
+		# Do not use .read() as this does not perform well on large files
+		# Optimally you read the file line by line for whatever validation you need
+		linecount = 0
+		with open(file_path, 'rb') as f:
+			for line in f:
+				linecount += 1
+				if b'magic' in line:
+					# Save the file path 
+					self.file_path = file_path
+					# Return True to signal that the ingestor will parse this file
+					return True
+				if linecount > 20:
+					break
+		# Return False if this ingestor is not suitable
+		return False
 
 	def parse(self):
 		# Parse file contents and store relevant information
-		self.host = self.raw_file.decode('utf8')
-		self.port = 0
+		with open(self.file_path, 'rb') as f:
+			for line in f:
+				self.host = line.decode('utf8')
+				self.port = 0
 
 	def getDatabaseInterface(self):
 		# Return this mandatory scan interface

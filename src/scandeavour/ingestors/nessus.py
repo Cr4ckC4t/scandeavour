@@ -21,16 +21,24 @@ class NessusIngestor(BaseIngestor):
 			accepted_files='export.nessus'
 		)
 
-	def validate(self, raw_file):
-		if b'</NessusClientData_v2>' in raw_file:
-			self.raw_file = raw_file
+	def validate(self, file_path):
+		with open(file_path, 'rb') as f:
+			# line 1
+			line = f.readline()
+			if not line.startswith(b'<?xml version'):
+				return False
+			# line 2
+			line = f.readline()
+			if not line.startswith(b'<NessusClientData_v2'): 
+				return False
+			
+			self.file_path = file_path
 			return True
-		return False
 
 	def parse(self):
 		self.root = None
 		try:
-			self.root = ET.fromstring(self.raw_file.decode('utf8'))
+			self.root = ET.parse(self.file_path).getroot()
 		except Exception as e:
 			print(f'{fc.red}[!]{fc.end} Parsing failed with: {e}')
 			sys.exit(1)
@@ -224,11 +232,8 @@ if __name__ == '__main__':
 		print(f'{fc.red}[!]{fc.end} {inp} does not exist')
 		sys.exit(1)
 
-	with open(inp, 'rb') as f:
-		scan = f.read()
-
 	ing = NessusIngestor()
-	if not ing.validate(scan):
+	if not ing.validate(inp):
 		print(f'{fc.red}[!]{fc.end} Not a valid Nessus file')
 		sys.exit(1)
 	ing.parse()

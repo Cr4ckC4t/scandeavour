@@ -23,17 +23,26 @@ class MasscanXMLIngestor(BaseIngestor):
 			accepted_files = 'masscan.xml'
 		)
 
-	def validate(self, raw_file):
-		# masscan XML uses a format similar to Nmap
-		if b'</nmaprun>' in raw_file and b'<!-- masscan' in raw_file and b'scanner="masscan"' in raw_file:
-			self.raw_file = raw_file
+	def validate(self, file_path):
+		# masscan XML should start with XML that contains a comment like "masscan"
+		# see https://github.com/robertdavidgraham/masscan/blob/master/src/out-xml.c
+		with open(file_path, 'rb') as f:
+			# line 1
+			line = f.readline()
+			if not line.startswith(b'<?xml version'):
+				return False
+			# line 2
+			line = f.readline()
+			if b'<!-- masscan' not in line: 
+				return False
+			
+			self.file_path = file_path
 			return True
-		return False
 
 	def parse(self):
 		self.root = None
 		try:
-			self.root = ET.fromstring(self.raw_file.decode('utf8'))
+			self.root = ET.parse(self.file_path).getroot()
 		except Exception as e:
 			print(f'{fc.red}[!]{fc.end} Parsing failed with: {e}')
 			sys.exit(1)
@@ -160,11 +169,8 @@ if __name__ == '__main__':
 		print(f'{fc.red}[!]{fc.end} {inp} does not exist')
 		sys.exit(1)
 
-	with open(inp, 'rb') as f:
-		scan = f.read()
-
 	ing = MasscanIngestor()
-	if not ing.validate(scan):
+	if not ing.validate(inp):
 		print(f'{fc.red}[!]{fc.end} Not a valid Masscan file')
 		sys.exit(1)
 	ing.parse()

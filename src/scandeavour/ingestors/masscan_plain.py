@@ -24,43 +24,46 @@ class MasscanPlainIngestor(BaseIngestor):
 			accepted_files = 'masscan.log'
 		)
 
-	def validate(self, raw_file):
+	def validate(self, file_path):
 		# masscan plain output contains always the same line
-		if raw_file.startswith(b'Discovered open port '):
-			self.raw_file = raw_file
-			return True
+		with open(file_path, 'rb') as f:
+			line = f.readline()
+			if line.startswith(b'Discovered open port '):
+				self.file_path = file_path
+				return True
 		return False
 
 	def parse(self):
 
 		self.hosts = {}
-		for line in self.raw_file.split(b'\n'):
-			# parse output from
-			# https://github.com/robertdavidgraham/masscan/blob/a31feaf5c943fc517752e23423ea130a92f0d473/src/output.c#L757
+		with open(self.file_path, 'rb') as f:
+			for line in f:
+				# parse output from
+				# https://github.com/robertdavidgraham/masscan/blob/a31feaf5c943fc517752e23423ea130a92f0d473/src/output.c#L757
 
-			result_line = line.decode()
-			if not result_line.startswith('Discovered open port '):
-				# ignore closed ports
-				continue
+				result_line = line.decode()
+				if not result_line.startswith('Discovered open port '):
+					# ignore closed ports
+					continue
 
-			port = result_line.split('open port ')[1].split(' on ')[0]
-			port_num = int(port.split('/')[0])
-			port_prot = port.split('/')[1]
+				port = result_line.split('open port ')[1].split(' on ')[0]
+				port_num = int(port.split('/')[0])
+				port_prot = port.split('/')[1]
 
-			if port_prot not in ['tcp', 'udp']:
-				# let's ignore arp and icmp results for now
-				# it could be added on request though
-				continue
+				if port_prot not in ['tcp', 'udp']:
+					# let's ignore arp and icmp results for now
+					# it could be added on request though
+					continue
 
-			host = result_line.split(' on ')[1]
+				host = result_line.split(' on ')[1]
 
-			if host not in self.hosts.keys():
-				self.hosts[host] = []
+				if host not in self.hosts.keys():
+					self.hosts[host] = []
 
-			self.hosts[host].append({
-				'num': port_num,
-				'prot': port_prot
-			})
+				self.hosts[host].append({
+					'num': port_num,
+					'prot': port_prot
+				})
 
 	def getDatabaseInterface(self):
 		scan = {
@@ -135,11 +138,8 @@ if __name__ == '__main__':
 		print(f'{fc.red}[!]{fc.end} {inp} does not exist')
 		sys.exit(1)
 
-	with open(inp, 'rb') as f:
-		scan = f.read()
-
 	ing = MasscanIngestor()
-	if not ing.validate(scan):
+	if not ing.validate(inp):
 		print(f'{fc.red}[!]{fc.end} Not a valid Masscan file')
 		sys.exit(1)
 	ing.parse()

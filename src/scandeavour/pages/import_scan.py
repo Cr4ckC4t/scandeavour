@@ -1,4 +1,5 @@
-from dash import html, dcc, callback, Input, Output, State, register_page, get_asset_url, set_props, clientside_callback, ClientsideFunction
+from dash import html, dcc, callback, Input, Output, State, register_page, get_asset_url, set_props
+from dash.exceptions import PreventUpdate
 import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
 from scandeavour.components.customToast import CustomToast
@@ -8,7 +9,7 @@ import sys
 import inspect
 from scandeavour.utils import getDB, IPtoNum, NumToIP, getHostLabel
 from base64 import b64decode
-from os import path, remove
+from os import path, remove, stat
 import tempfile
 import time
 
@@ -34,8 +35,8 @@ def layout(**kwargs):
 			dcc.Upload(
 				id='upload-scan',
 				children=html.Div([
-						html.Img(src=get_asset_url('icons/upload-file.svg')),
-						html.H4('Import scan'),
+						html.Img(src=get_asset_url('icons/upload-file.svg'), id='import-scan-file-image'), # updated during upload
+						html.H4('Import scan', id='import-scan-h4label'), # updated during upload
 						html.Span('Select a file or use drag and drop.'),
 						html.Span(f'Accepted file types: {accepted_files}'),
 					],
@@ -53,7 +54,8 @@ def layout(**kwargs):
 				style_active={
 					'backgroundColor': 'var(--bs-secondary)',
 				},
-				multiple=True
+				multiple=True,
+				disabled=False
 			),
 			html.Div([
 				dbc.Progress(
@@ -96,7 +98,7 @@ def layout(**kwargs):
 				delay_hide=200,
 				color='#00ffe0'
 			),
-			dbc.Button('Delete all imported scans', id='btn-delete-scans', outline=True, color='danger', class_name='me-1 scan-del-btn'),
+			dbc.Button('Delete all imported scans', id='btn-delete-scans', disabled=False, outline=True, color='danger', class_name='me-1 scan-del-btn'),
 			dbc.Modal(
 				[
 					dbc.ModalHeader(dbc.ModalTitle('Delete scans')),
@@ -121,18 +123,58 @@ def layout(**kwargs):
 
 @callback(	Output('upload-data-change', 'data'),
 		Output('div-toaster', 'children', allow_duplicate=True),
-		Output('upload-progress', 'style'),
-		Output('upload-progress', 'value'),
-		Output('upload-progress', 'label'),
 		Input('upload-scan', 'contents'),
 		State('upload-scan', 'filename'),
 		State('div-toaster', 'children'),
+		background=True, # Required, so we can use "progress" here, for realtime updates
+		running=[
+			# view progress bar while uploading
+			(
+				Output('upload-progress', 'style'),
+				{"visibility": "visible"},
+				{"visibility": "hidden"}
+			),
+			# prevent database deletion
+			(
+				Output('btn-delete-scans', 'disabled'),
+				True,
+				False
+			),
+			# prevent new upload
+			(
+				Output('upload-scan', 'disabled'),
+				True,
+				False
+			),
+			# change label
+			(
+				Output('import-scan-h4label', 'children'),
+				'Working on it...',
+				'Import scan',
+			),
+			# change image
+			(
+				Output('import-scan-file-image','src'),
+				get_asset_url('icons/coffee.svg'),
+				get_asset_url('icons/upload-file.svg')
+			)
+		],
+		progress=[
+			Output('upload-progress', 'value'),
+			Output('upload-progress', 'label')
+		],
 		prevent_initial_call=True,
-	)
-def _cb_fileUpload(file_contents, file_names, toasts):
+	) # see https://dash.plotly.com/background-callbacks for explanation of set_progress
+def _cb_fileUpload(set_progress, file_contents, file_names, toasts):
 	# This gets called on upload but we patched file_contents to be empty, to not crash the browser.
 	# By now the file contents are uploaded already.
 	# See assets/patchFileReader.js.
+	if not file_names:
+		raise PreventUpdate
+
+	print(f'[+] Parsing uploaded file(s):')
+	for ix in range(len(file_names)):
+		print(f'\t- ({ix+1}) {file_names[ix]}')
 
 	# Load ingestors
 	available_ingestors = []
@@ -163,50 +205,56 @@ def _cb_fileUpload(file_contents, file_names, toasts):
 		))
 		file_contents = None
 
+	# For the progress calculations
+	# we start at 40/100 when we are here (40% is set by the assets/patchFileReader.js)
+	# so we got 60 left to fill.
+	parse_bpct = 40									# start of progress bar (base percentage)
+	parse_ftotal = len(file_names)					# files to process
+	parse_fcnt = 0									# files processed
+	parse_fpct = int((100-parse_bpct)/parse_ftotal)	# percentages available per file (regardless of their size)
+	
+
 	# Files have been uploaded to a tmp dir (paths are in file_contents)
 	# real file names are in file_names and
 	# ingestors have been loaded (at least one)
 	if file_contents is not None:
 		for tmp_name, name in zip(file_contents, file_names):
-			# Incrementing this during analysis was attempted
-			# However, processing scans is to fast mostly, to propagate progressbar changes made on the server side to the client
-			# So we just set it to 100
-			set_props('upload-progress', {'value': 100})
-			set_props('upload-progress', {'label': f'Parsing {name}'})
-			set_props('upload-progress', {'style': {'visibility':'visible'}})
+			# Increase counter immediately, because it may fail anytime and then we continue with the next one
+			parse_fcnt += 1
+
+			# Set progress to base percentage + start of nth file
+			set_progress((
+				parse_bpct+parse_fpct*(parse_fcnt-1),
+				f'📂 {parse_fcnt}|{parse_ftotal} - Loading scan 👷'
+			))
 
 			tmp_name = b64decode(tmp_name.split(',')[1]).decode()
 			tmp_file = path.join(tempfile.gettempdir(),tmp_name)
+			fsize = stat(tmp_file).st_size
 
-			# Reading file contents
-			# We do this once so not every ingestor has to read it
-			# Strings are passed by reference so this should be okay when we pass the contents of (large) files
-			raw_file = b''
-			try:
-				with open(tmp_file, 'rb') as f:
-					raw_file = f.read()
-			except Exception as e:
-				toasts.append(CustomToast(
-					[ f'Failed to access {tmp_file} ({name}).' ],
-					headerText=f'Parse error',
-					level='error',
-					duration=6000,
-				))
-				continue
-			# Remove temp file now
-			remove(tmp_file)
-
+			# Let each ingestor validate the file to see if it can parse the scan
 			ingestor = None
 			for cls in available_ingestors:
 				i = cls()
-				if i.validate(raw_file):
-					ingestor = i
-					break
+				try:
+					if i.validate(tmp_file):
+						ingestor = i
+						break
+				except Exception as e:
+					toasts.append(CustomToast(
+						[ f'[{i.getName()}] Failed to validate {tmp_file} ({name}): {e}' ],
+						headerText=f'Parse error',
+						level='error',
+						duration=6000,
+					))
+					# This may have been an error in the parser
+					# but another parser could still be valid
+					continue
 
 			if ingestor is None:
 				toasts.append(CustomToast(
 					[ f'Filetype of {name} is not yet supported.' ],
-					headerText=f'No ingestor available',
+					headerText=f'Missing ingestor',
 					level='warning',
 					duration=6000,
 				))
@@ -214,9 +262,11 @@ def _cb_fileUpload(file_contents, file_names, toasts):
 
 			try:
 				ingestor.parse()
+				# Delete tmp file
+				remove(tmp_file)
 			except Exception as e:
 				toasts.append(CustomToast(
-					[ f'Failed to parse {name}: {e}' ],
+					[ f'Failed to parse {name} ({tmp_file} may still exist): {e}' ],
 					headerText=f'Ingestor failed',
 					level='warning',
 					duration=10000,
@@ -234,13 +284,24 @@ def _cb_fileUpload(file_contents, file_names, toasts):
 				))
 				continue
 
+			# Now we parsed the file and can put it into the database
+
+			total_hosts = len(scan_interface['hosts'])
+
+			# Set progress to base percentage + start of nth file + 30% of the assigned percentages per file
+			# This represents that the workload per scan is roughly 30% reading, 70% database manipulation
+			set_progress((
+				parse_bpct+parse_fpct*(parse_fcnt-0.7),
+				f'📂 {parse_fcnt}|{parse_ftotal} - Added 0|{total_hosts} 🖥️'
+			))
+
 			db_con, db = getDB()
 
 			# Only now we are kind of sure that we want to store the scan, so create a file entry in the db
 			db.execute('INSERT INTO input_files(type, filename, ingestDate, filesize) VALUES(?,?,unixepoch(),?)',(
 				ingestor.getName(),
 				name,
-				len(raw_file)
+				fsize
 			))
 			fileID = db.lastrowid
 
@@ -258,7 +319,9 @@ def _cb_fileUpload(file_contents, file_names, toasts):
 
 			shosts = scan_interface['hosts']
 
+			added_hosts_cnt = 0
 			for shost in shosts:
+				added_hosts_cnt += 1 # used for the progress bar at the end
 
 				# All of these addresses are considered unique identifiers for a host:
 				# 	IPv4, IPv6, MAC
@@ -387,6 +450,13 @@ def _cb_fileUpload(file_contents, file_names, toasts):
 								scanID, hostID, portID, pscript['id'], pscript['output']
 							))
 
+				# Fill up the remaining 70% of every scan with the current amount of processed hosts
+				# 70%
+				set_progress((
+					parse_bpct+parse_fpct*(parse_fcnt-0.7 + 0.7*added_hosts_cnt/total_hosts),
+					f'📂 {parse_fcnt}|{parse_ftotal} - Added {added_hosts_cnt}|{total_hosts} 🖥️'
+				))
+
 			toasts.append(CustomToast(
 				[ f'Found {scan_interface["hosts_up"]} hosts in {name}.' ],
 				headerText=f'Scan imported',
@@ -398,12 +468,12 @@ def _cb_fileUpload(file_contents, file_names, toasts):
 			# https://www.sqlite.org/faq.html#q19
 			db_con.commit()
 			db_con.close()
+		
+		# All scans processed
+		set_progress((100, f'All done 🎉'))
+		time.sleep(2) # Keep this for better UX
 
-			# Give React enough time to show a complete progress bar for the host, then continue
-			# This is purely for UX
-			time.sleep(1.5)
-
-	return True, toasts, {'visibility':'hidden'}, 0, ''
+	return True, toasts
 
 
 @callback(	Output('input-files-table', 'rowData'),

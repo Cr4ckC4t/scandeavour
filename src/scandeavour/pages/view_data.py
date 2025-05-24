@@ -948,7 +948,7 @@ def _cb_btnConfirmTagUpdate(confirm_click, tag, custom_label, target, tag_intent
 	elif target == 2 or target == 3:
 		for row in (cur_selected_rows if target == 2 else cur_rows):
 			db.execute('UPDATE hosts SET tag=?, tag_type=? WHERE hid=?',
-				(tag, tag_trype, row['hid'])
+				(tag, tag_type, row['hid'])
 			)
 			updated_hids.append(str(row['hid']))
 

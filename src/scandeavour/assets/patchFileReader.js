@@ -52,7 +52,7 @@ class PatchFileReader extends FileReader {
 		/* Start progress bar */
 		document.getElementById('upload-progress').style.visibility='visible';
 		document.getElementById('upload-progress').children[0].style.width='20%';
-		document.getElementById('upload-progress').children[0].innerText='Uploading file(s)';
+		document.getElementById('upload-progress').children[0].innerText='👷 Uploading file(s)';
 
 		// Synchronously send the file to Dash
 		const tmpName = await this.moveDataToBackend(file);
@@ -64,6 +64,8 @@ class PatchFileReader extends FileReader {
 		 * Note that we don't need to pass a filename, because the
 		 * onload callback of the Upload component uses the file object directly.
 		 */
+		document.getElementById('upload-progress').children[0].style.width='40%';
+		document.getElementById('upload-progress').children[0].innerText='👷 Loading scan(s)';
 		super.readAsDataURL(new File([tmpName],''));
 	}
 }

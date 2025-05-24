@@ -17,17 +17,20 @@ server = Flask(__name__)
 @server.route('/upload-file', methods=['POST'])
 def upload_file_api():
 	try:
+		print(f'[+] Uploading file...')
 		name = uuid.uuid4().hex
 		with open(path.join(tempfile.gettempdir(),name), 'wb') as f:
 			f.write(request.data)
+			print(f'[+] File uploaded successfully ({name})')
 		return name, 200
 	except Exception as e:
-		print(f'Failed to process API request: {e}')
+		print(f'[!] Failed to process API request: {e}')
 		return '', 500
 
 
 def DashApp(server):
 
+	# Background manager required for the file upload task
 	cache = diskcache.Cache("./cache")
 	background_callback_manager = DiskcacheManager(cache)
 
