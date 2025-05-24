@@ -251,8 +251,15 @@ def layout(**kwargs):
 						}),
 						html.Div([
 							dbc.Label('Use custom label'),
+							html.Datalist(
+								id = 'tag-autocompletion-list',
+								children=[],
+								hidden=True,
+							),
 							dcc.Input(
 								placeholder=TagRibbons.customLabelRegex,
+								autoComplete=True,
+								list='tag-autocompletion-list',
 								type='text',
 								value='',
 								className='hd-tag-custom-label-input',
@@ -872,6 +879,7 @@ def genScanList(scans):
 
 @callback(	Output('modal-update-tag', 'is_open'),
 		Output('tag-click-intent', 'data'),
+		Output('tag-autocompletion-list', 'children'),
 		Input({'index': 'btn-choose-tag', 'type': ALL}, 'n_clicks'),
 		prevent_initial_call=True
 	)
@@ -879,7 +887,14 @@ def _cb_openUpdateTagModal(n_clicks):
 	# Guard to prevent opening on detail rendering
 	if not any(n_clicks):
 		raise PreventUpdate
-	return True, {'hid': int(ctx.triggered_id['type'])}
+
+	db_con, db = getDB()
+	available_tag_values = db.execute('SELECT DISTINCT tag FROM hosts WHERE tag != ""').fetchall()
+	db_con.close()
+
+	tag_autocompletion_list = [html.Option(value=tag_value[0]) for tag_value in available_tag_values]
+
+	return True, {'hid': int(ctx.triggered_id['type'])}, tag_autocompletion_list
 
 
 # Update the serverside (database) with the tag changes
