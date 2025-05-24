@@ -1,4 +1,4 @@
-__version__ = "1.3.1"
+__version__ = "1.3.2"
 
 from dash import Dash, html, get_asset_url, page_container, DiskcacheManager, clientside_callback, Input, Output, State
 import dash_bootstrap_components as dbc
