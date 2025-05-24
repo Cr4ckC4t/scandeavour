@@ -24,7 +24,6 @@ def upload_file_api():
 			while True:
 				# Use a stream reader, otherwise the app will crash for files with ~400 MB
 				chunk = request.stream.read(chunk_size)
-				print(f'getting chunk {len(chunk)}')
 				if len(chunk) == 0:
 					break
 				f.write(chunk)
@@ -38,7 +37,7 @@ def upload_file_api():
 def DashApp(server):
 
 	# Background manager required for the file upload task
-	cache = diskcache.Cache("./cache")
+	cache = diskcache.Cache(path.join(tempfile.gettempdir(),'scandeavour.cache'))
 	background_callback_manager = DiskcacheManager(cache)
 
 	app = Dash(
