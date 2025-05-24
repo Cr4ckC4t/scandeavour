@@ -2,7 +2,6 @@
 <h1 align="center">Scandeavour</h1>
 <p align="center">
 <a href="https://pypi.org/project/scandeavour/"><img alt="PyPI - Version" src="https://img.shields.io/pypi/v/scandeavour"></a>
-<a href="https://github.com/Cr4ckC4t/scandeavour/blob/main/LICENSE"><img alt="PyPI - License" src="https://img.shields.io/pypi/l/scandeavour"></a>
 </p>
 <p align="center">
 Dashboard for merging, visualising and filtering network scans.
