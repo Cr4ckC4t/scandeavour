@@ -51,7 +51,8 @@ CREATE TABLE IF NOT EXISTS hosts(
 	label TEXT NOT NULL, /* no collate nocase because we don't use it for matching */
 	port_cnt INTEGER DEFAULT 0,
 	script_cnt INTEGER DEFAULT 0,
-	tag TEXT NOT NULL DEFAULT '' COLLATE NOCASE
+	tag TEXT NOT NULL DEFAULT '' COLLATE NOCASE,
+	tag_type TEXT NOT NULL DEFAULT '' COLLATE NOCASE
 );
 
 CREATE TABLE IF NOT EXISTS hostnames(

@@ -220,7 +220,6 @@ def layout(**kwargs):
 		className='data-details-container'),
 
 		# Modal for tag management
-		# TODO: Allow users to select their own tag
 		dbc.Modal(
 			[
 				dbc.ModalHeader(dbc.ModalTitle('Update tag')),
@@ -229,7 +228,17 @@ def layout(**kwargs):
 							dbc.Label('Choose a tag'),
 							dbc.RadioItems(
 								options=[
-									{'label': TagRibbons.map[opt]['tag-label'], 'value': opt}
+									{
+										'label': html.Div([
+											TagRibbons.map[opt]['tag-label'],
+										], style={
+											'background': TagRibbons.map[opt]['css-color'],
+											'paddingLeft': '1rem',
+											'paddingRight': '1rem',
+											'borderRadius': '1rem',
+										}),
+										'value': opt
+									}
 									for opt in TagRibbons.map
 								],
 								value=[t for t in TagRibbons.map][0],
@@ -241,6 +250,20 @@ def layout(**kwargs):
 							'flexGrow': '1',
 						}),
 						html.Div([
+							dbc.Label('Use custom label'),
+							dcc.Input(
+								placeholder=TagRibbons.customLabelRegex,
+								type='text',
+								value='',
+								className='hd-tag-custom-label-input',
+								pattern=f'^{TagRibbons.customLabelRegex}$',
+								maxLength=20,
+								id='hd-custom-label-input',
+							),
+							html.Div(style = {
+								'display': 'inline-block',
+								'flexGrow': '1',
+							}),
 							dbc.Label('Apply tag to'),
 							dbc.RadioItems(
 								options=[
@@ -251,7 +274,11 @@ def layout(**kwargs):
 								value=1,
 								id='hd-tag-targets',
 							),
-						]),
+						],
+						style={
+							'display': 'flex',
+							'flexDirection': 'column',
+						}),
 					],
 					style={
 						'display': 'flex',
@@ -860,15 +887,36 @@ def _cb_openUpdateTagModal(n_clicks):
 		Output('modal-update-tag', 'is_open', allow_duplicate=True),
 		Input('btn-confirm-modal-update-tag', 'n_clicks'),
 		State('hd-tag-selection', 'value'),
+		State('hd-custom-label-input', 'value'),
 		State('hd-tag-targets', 'value'),
 		State('tag-click-intent', 'data'),
 		State('view-data-table', 'selectedRows'),
 		State('view-data-table', 'rowData'),
 		prevent_initial_call=True
 	)
-def _cb_btnConfirmTagUpdate(confirm_click, tag, target, tag_intent, cur_selected_rows, cur_rows):
+def _cb_btnConfirmTagUpdate(confirm_click, tag, custom_label, target, tag_intent, cur_selected_rows, cur_rows):
 	if confirm_click == 0:
 		raise PreventUpdate
+
+	# Get our default option that stands for "remove tag"
+	removeTagOption = [t for t in TagRibbons.map][0]
+
+	# If the user specified a custom label and any tag, we must verify the regex
+	if tag != removeTagOption and custom_label != '':
+		pattern = re.compile(TagRibbons.customLabelRegex)
+		if not pattern.fullmatch(custom_label):
+			# In this case, the GUI would show a red border, so the user knows what to do
+			raise PreventUpdate
+
+	# If the tag "remove tag" was chosen, we can set everything to empty
+	if tag == removeTagOption:
+		tag = ''
+		custom_label = ''
+
+	# Differentiate between the tag type (specifies the color) and the tag label
+	tag_type = tag
+	# When a custom label was set, use it instead of the default tag label
+	tag = tag if custom_label == '' else custom_label
 
 	hid = tag_intent['hid']
 
@@ -877,17 +925,23 @@ def _cb_btnConfirmTagUpdate(confirm_click, tag, target, tag_intent, cur_selected
 	updated_hids = []
 	# This host
 	if target == 1:
-		db.execute('UPDATE hosts SET tag=? WHERE hid=?', (tag if tag != 'Choose tag' else '', hid))
+		db.execute('UPDATE hosts SET tag=?, tag_type=? WHERE hid=?',
+			(tag, tag_type, hid)
+		)
 		updated_hids = [str(hid)]
-	# All selected hosts or  All current results
+	# All selected hosts or All current results
 	elif target == 2 or target == 3:
 		for row in (cur_selected_rows if target == 2 else cur_rows):
-			db.execute('UPDATE hosts SET tag=? WHERE hid=?', (tag if tag != 'Choose tag' else '', row['hid']))
+			db.execute('UPDATE hosts SET tag=?, tag_type=? WHERE hid=?',
+				(tag, tag_trype, row['hid'])
+			)
 			updated_hids.append(str(row['hid']))
 
+	# This host
 	trigger_tag_update = {
 		'targets': updated_hids,
-		'tag': tag
+		'tag': tag if tag!='' else removeTagOption,
+		'tag_type': tag_type if tag_type != '' else removeTagOption
 	}
 
 	db_con.commit()
@@ -895,6 +949,18 @@ def _cb_btnConfirmTagUpdate(confirm_click, tag, target, tag_intent, cur_selected
 
 	return trigger_tag_update, False
 
+@callback(	Output('hd-custom-label-input', 'disabled'),
+	Output('hd-custom-label-input', 'style'),
+	Input('hd-tag-selection', 'value'),
+)
+def _cb_tagModalTagSelection(selectedTag):
+	# If the selected tag matches the first entry (remove tag), then disable the custom label input
+	# because it makes no sense to specify a label when we want to remove it.
+	disableCustomLabel = selectedTag == [t for t in TagRibbons.map][0]
+	return (
+		disableCustomLabel,
+		{'textDecoration': 'line-through'} if disableCustomLabel else {},
+	)
 
 @callback(	Output('data-detail-rows', 'children'),
 		Input('view-data-table', 'selectedRows'),
@@ -912,15 +978,18 @@ def _cb_outputSelectedRows(selected_rows, host_detail_settings):
 		db_con, db = getDB()
 		for selected_row in selected_rows:
 			# this should always succeed because the row that was fetched must come from the table
-			qr = db.execute('SELECT hid, ipv4, ipv6, mac, reason, os_name, os_accuracy, os_family, os_vendor, label, tag FROM hosts WHERE hid=?', (int(selected_row['hid']),)).fetchone()
-			hid, ipv4, ipv6, mac, reason, os_name, os_accuracy, os_family, os_vendor, host_label, tag = qr
+			qr = db.execute('SELECT hid, ipv4, ipv6, mac, reason, os_name, os_accuracy, os_family, os_vendor, label, tag, tag_type FROM hosts WHERE hid=?', (int(selected_row['hid']),)).fetchone()
+			hid, ipv4, ipv6, mac, reason, os_name, os_accuracy, os_family, os_vendor, host_label, tag, tag_type = qr
 
 			ipv4 = NumToIP(ipv4) if ipv4 else '-/-'
 			ipv6 = ipv6 or '-/-'
 			mac = mac or '-/-'
 			reason = reason if len(reason) else '-/-'
 
-			tag = tag if len(tag) > 0 else 'Choose tag'
+			# Set the default tag and type for when no tag was set
+			if tag_type == '':
+				tag = [t for t in TagRibbons.map][0]
+				tag_type = tag
 
 			os_vendor = f'{os_vendor} - ' if len(os_vendor) else ''
 			os_family = f'{os_family} - ' if len(os_family) else ''
@@ -980,7 +1049,7 @@ def _cb_outputSelectedRows(selected_rows, host_detail_settings):
 					id={'index': 'btn-choose-tag', 'type': f'{hid}'},
 					style={
 						'display': 'block' if show_tag else 'none',
-						'background': TagRibbons.map[tag]['css-color']
+						'background': TagRibbons.map[tag_type]['css-color']
 					}
 				),
 				html.Div([
