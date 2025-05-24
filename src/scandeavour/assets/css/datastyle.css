@@ -212,6 +212,15 @@
 	position: relative; /* required to position the ribbon */
 }
 
+.hd-tag-custom-label-input {
+	height: 2rem;
+	background-color: transparent;
+	border: none;
+	border-bottom: 1px solid #fff;
+	width: 13rem;
+	color: #fff;
+}
+
 /* https://css-generators.com/ribbon-shapes/ */
 .hd-ribbon {
 	font-size: 1.4rem;

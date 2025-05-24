@@ -435,8 +435,7 @@ FROM (
 
 class TagRibbons:
 	# maps the actual tag values to their label for selection and color
-
-	map = { # The first option will be the default option
+	map = { # The first option must be the default option (no tag)
 		'Choose tag': {
 			'tag-label': '(Remove tag)',
 			'css-color': 'linear-gradient(to right, #2C5364, #0F2027)'
@@ -454,7 +453,7 @@ class TagRibbons:
 			'css-color': 'linear-gradient(to right, #F09819, #FF512F)'
 		},
 		'High value': {
-			'tag-label': 'High value target',
+			'tag-label': 'High value',
 			'css-color': 'linear-gradient(to right, #FFC837, #FF8008)'
 		},
 		'Vulnerable': {
@@ -474,3 +473,5 @@ class TagRibbons:
 			'css-color': 'linear-gradient(to right, #b29f94, #603813)'
 		},
 	}
+
+	customLabelRegex = '[A-Za-z][A-Za-z0-9 ]+'

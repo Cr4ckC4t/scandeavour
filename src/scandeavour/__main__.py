@@ -347,6 +347,7 @@ def main():
 			const tag_ribbons_map="""+str(TagRibbons.map)+""";
 			const targets = new Set(update['targets']);
 			const tag = update['tag'];
+			const tag_type = update['tag_type'];
 
 			/* Update details */
 			const ribbons = document.getElementsByClassName('hd-ribbon');
@@ -354,7 +355,7 @@ def main():
 			while (ix < ribbons.length) {
 				/* the id of a ribbon is an object like {"index": "btn..", "type": "<hid>"} */
 				if (targets.has(JSON.parse(ribbons[ix].id)['type'])) {
-					ribbons[ix].style.background = tag_ribbons_map[tag]['css-color'];
+					ribbons[ix].style.background = tag_ribbons_map[tag_type]['css-color'];
 					ribbons[ix].innerText = tag;
 				}
 				ix++;
@@ -366,7 +367,7 @@ def main():
 			ix = 0;
 			while (ix < table_rows.length) {
 				if (targets.has(table_rows[ix].data.hid.toString())) {
-					vdtApi.rowModel.rowsToDisplay[ix].data.tag = tag === 'Choose tag' ? '' : tag;
+					vdtApi.rowModel.rowsToDisplay[ix].data.tag = tag === Object.keys(tag_ribbons_map)[0] ? '' : tag;
 				}
 				ix++;
 			}
