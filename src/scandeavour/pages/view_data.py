@@ -3,6 +3,7 @@ from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
 import dash_ag_grid as dag
 from scandeavour.components.customToast import CustomToast
+from scandeavour.components.customTheme import CustomTheme
 from scandeavour.utils import getDB, NumToIP, IPtoNum, CIDRtoFirstLast, DataFilterMap, TagRibbons
 import re
 
@@ -182,10 +183,10 @@ def layout(**kwargs):
 							'autoHeight':True,
 							'cellStyle': {'wordBreak':'normal'},
 						},
-						className='ag-theme-alpine-dark',
 						style={'height': '24rem'},
 						dashGridOptions={ # filter text is updated in callback and not listed here
-							'rowSelection': 'multiple'
+							'rowSelection': 'multiple',
+							'theme': CustomTheme().getDarkAgGrid()
 						},
 					)
 				],

@@ -5,6 +5,7 @@ import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
 from scandeavour.utils import getDB
 from scandeavour.components.customToast import CustomToast
+from scandeavour.components.customTheme import CustomTheme
 
 register_page(__name__, path='/stats')
 
@@ -144,7 +145,8 @@ def layout(**kwargs):
 									'autoHeight':True,
 									'cellStyle': {'wordBreak':'normal'},
 								},
-								className='ag-theme-alpine-dark stats-ag-grid',
+								className='stats-ag-grid',
+								dashGridOptions={'theme': CustomTheme().getDarkAgGrid()},
 								style={'height': '16rem'}
 							)
 						],
@@ -180,7 +182,8 @@ def layout(**kwargs):
 									'autoHeight':True,
 									'cellStyle': {'wordBreak':'normal'},
 								},
-								className='ag-theme-alpine-dark stats-ag-grid',
+								className='stats-ag-grid',
+								dashGridOptions={'theme': CustomTheme().getDarkAgGrid()},
 								style={'height': '16rem'}
 							)
 						],

@@ -3,6 +3,7 @@ from dash.exceptions import PreventUpdate
 import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
 from scandeavour.components.customToast import CustomToast
+from scandeavour.components.customTheme import CustomTheme
 from scandeavour.ingestors import *
 from scandeavour.ingestor_base import BaseIngestor
 import sys
@@ -30,6 +31,7 @@ def layout(**kwargs):
 	accepted_files = ', '.join([ing.getAcceptedFiles() for ing in available_ingestors])
 
 	return 	html.Div([
+			dcc.Interval(id='onload-interval-trigger', interval=1, n_intervals=0, max_intervals=1),
 			# Store value that is cleared when browser tab closes
 			dcc.Store(id='upload-data-change', data=False, storage_type='session'),
 			dcc.Upload(
@@ -85,8 +87,11 @@ def layout(**kwargs):
 						{'headerName':'Filesize', 'field':'filesize', 'maxWidth': 150, 'filter': 'agNumberColumnFilter', 'valueFormatter':{'function':'FileSize(params.value)'}}
 					],
 					defaultColDef={'useValueFormatterForExport': 'False'},
-					className='ag-theme-alpine-dark input-file-table-container',
-					dashGridOptions={'domLayout': 'autoHeight'},
+					className='input-file-table-container',
+					dashGridOptions={
+						'domLayout': 'autoHeight',
+						'theme': CustomTheme().getDarkAgGrid()
+					},
 					columnSize='responsiveSizeToFit',
 					style= {
 						'height': None,
@@ -98,6 +103,7 @@ def layout(**kwargs):
 				delay_hide=200,
 				color='#00ffe0'
 			),
+			html.Span("All imported scans get merged into one. Thus, you cannot delete single scans.", style={'color': 'grey'}),
 			dbc.Button('Delete all imported scans', id='btn-delete-scans', disabled=False, outline=True, color='danger', class_name='me-1 scan-del-btn'),
 			dbc.Modal(
 				[
@@ -212,7 +218,6 @@ def _cb_fileUpload(set_progress, file_contents, file_names, toasts):
 	parse_ftotal = len(file_names)					# files to process
 	parse_fcnt = 0									# files processed
 	parse_fpct = int((100-parse_bpct)/parse_ftotal)	# percentages available per file (regardless of their size)
-	
 
 	# Files have been uploaded to a tmp dir (paths are in file_contents)
 	# real file names are in file_names and
@@ -468,7 +473,7 @@ def _cb_fileUpload(set_progress, file_contents, file_names, toasts):
 			# https://www.sqlite.org/faq.html#q19
 			db_con.commit()
 			db_con.close()
-		
+
 		# All scans processed
 		set_progress((100, f'All done 🎉'))
 		time.sleep(2) # Keep this for better UX
@@ -478,8 +483,9 @@ def _cb_fileUpload(set_progress, file_contents, file_names, toasts):
 
 @callback(	Output('input-files-table', 'rowData'),
 		Input('upload-data-change', 'data'),
+		Input('onload-interval-trigger', 'n_intervals')
 	)
-def _cb_updateFileUploadTable(_):
+def _cb_updateFileUploadTable(_,__):
 	db_con, db = getDB()
 	# Nested SQL queries won't work with the same connection when iterating over a cursor
 	# Alternatively we'd have to use fetchall()

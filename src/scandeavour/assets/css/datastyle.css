@@ -72,29 +72,24 @@
 }
 
 .dd-field-selector {
-	width: 12rem;
+	width: 13rem;
 }
 
 .dd-match-op {
 	width: 12rem;
 }
 
-.input-filter-basic-dropdown input {
-	color: #fff !important;
-}
-
-.input-filter-basic-dropdown > .Select-control {
-	background-color: #2f323a;
-	border: none;	
-}
-
-.input-filter-basic-dropdown > .Select-menu-outer {
+.dash-dropdown-content {
 	background-color: #2f323a;
 	border: none;
 }
 
-.input-filter-basic-dropdown .Select-value-label {
-	color: #fff !important;
+.dash-dropdown-option {
+	color: #fff;
+}
+
+.dash-dropdown-search-container {
+	background-color: #4c5060;
 }
 
 /* Dynamic Filter Box */

@@ -94,3 +94,10 @@
 .toaster .toast {
 	margin-top: 1em;
 }
+
+/* overall dash styling */
+:root {  
+	/* styles the color for input highlights (e.g. in inputs and dropdowns) */
+        --Dash-Fill-Interactive-Strong: #00ffe0;
+	--Dash-Text-Disabled: #646464;
+}
